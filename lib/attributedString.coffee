@@ -1,6 +1,13 @@
-# as = new AttributedString("cool string")
-# as.range(0, 100).underline()
-# as.range(0, 4).color("red")
+deepClone = (obj) ->
+  if not obj? or typeof obj isnt 'object'
+    return obj
+
+  result = {}
+  for key, val of obj
+    result[key] = deepClone val
+
+  result
+
 class AttributedString
   constructor: (@text) ->
     @startNode = new AttributedString.RangeNode(@text, 0, @text.length)
@@ -38,15 +45,29 @@ class AttributedString.Ranges
       range.set name, value
     @
 
+  attr: (name, value) ->
+
+  css: (k, v) ->
+    for range in @ranges
+      range.css k, v
+    @
+
   underline: ->
-    @set "text-decoration", "underline"
+    @css "text-decoration", "underline"
+    @
 
   color: (value) ->
-    @set "color", value
+    @css "color", value
 
 class AttributedString.RangeNode
   constructor: (@text, @start, @end, @nextNode) ->
     @attributes = {}
+
+  css: (key, value) ->
+    if !@attributes.style?
+      @attributes.style = {}
+    @attributes.style[key] = value
+    @
 
   split: (num) ->
     if @start == num
@@ -54,8 +75,7 @@ class AttributedString.RangeNode
     else if @start < num && num < @end
       nn = @nextNode
       @nextNode = new AttributedString.RangeNode(@text, num, @end, nn)
-      for name, value of @attributes
-        @nextNode.attributes[name] = value
+      @nextNode.attributes = deepClone @attributes
       @end = num
       return @nextNode
     else
@@ -71,28 +91,33 @@ class AttributedString.RangeNode
     @end - @start
 
   set: (name, value) ->
-    @attributes[name] = value
+    if value == false
+      delete @attributes[name]
+    else
+      @attributes[name] = value
+    @
 
   toHtml: ->
     attributesSerializer = new AttributedString.AttributesSerializer(@attributes)
     "<span#{attributesSerializer.toHtml()}>#{@text.slice(@start, @end)}</span>"
 
 class AttributedString.AttributesSerializer
-  STYLE_ATTRIBUTES = ["color", "text-decoration"]
   constructor: (@attributes) ->
+
+  serializeStyles: (styles) ->
+    style = []
+    for key, val of styles
+      style.push "#{key}: #{val}"
+    style.join "; "
 
   toHtml: ->
     list = []
-    style = []
 
     for key, val of @attributes
-      if STYLE_ATTRIBUTES.indexOf(key) >= 0
-        style.push "#{key}: #{val}"
+      if key == "style"
+        list.push "style=\"#{@serializeStyles(@attributes.style)}\""
       else
         list.push "#{key}=\"#{val}\""
-
-    if style.length > 0
-      list.push "style=\"#{style.join("; ")}\""
 
     if list.length > 0
       " " + list.join(" ")

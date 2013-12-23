@@ -59,5 +59,5 @@ describe "AttributedString.RangeNode", ->
 
     it "should know how to serialize style attributes", ->
       node = new AttributedString.RangeNode("some cool string", 3, 9)
-      node.set "color", "red"
+      node.css "color", "red"
       expect(node.toHtml()).toBe """<span style="color: red">e cool</span>"""
