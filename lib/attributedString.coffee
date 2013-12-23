@@ -20,6 +20,16 @@ class AttributedString
       range = range.nextNode
     new AttributedString.Ranges(ranges)
 
+  toHtml: ->
+    serializer = (node, array) ->
+      array.push node.toHtml()
+      if node.nextNode?
+        serializer(node.nextNode, array)
+      array
+
+    serializer(@startNode, []).join ""
+
+
 class AttributedString.Ranges
   constructor: (@ranges) ->
 
@@ -65,7 +75,6 @@ class AttributedString.RangeNode
 
   toHtml: ->
     attributesSerializer = new AttributedString.AttributesSerializer(@attributes)
-
     "<span#{attributesSerializer.toHtml()}>#{@text.slice(@start, @end)}</span>"
 
 class AttributedString.AttributesSerializer

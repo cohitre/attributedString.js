@@ -33,3 +33,10 @@ describe "AttributedString", ->
       list = str.range(2, 6)
       expect(list.ranges.length).toBe 2
 
+  describe "#toHtml", ->
+    it "should serialize things", ->
+      str = new AttributedString("cool string")
+      str.range(0, 4).color "red"
+      str.range(2, 6).underline()
+
+      expect(str.toHtml()).toBe '<span style="color: red">co</span><span style="color: red; text-decoration: underline">ol</span><span style="text-decoration: underline"> s</span><span>tring</span>'
