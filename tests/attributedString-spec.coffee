@@ -5,13 +5,7 @@ describe "AttributedString", ->
     it "should initialize with a string", ->
       str = new AttributedString("cool string")
       expect(str.text).toBe("cool string")
-      expect(str.startNode.start).toBe 0
-      expect(str.startNode.end).toBe 11
-
-  describe "#getLength", ->
-    it "should return the string length", ->
-      str = new AttributedString("1234")
-      expect(str.getLength()).toBe 4
+      expect(str.startNode.text).toBe "cool string"
 
   describe "#range", ->
     it "should create a new range", ->
@@ -31,7 +25,7 @@ describe "AttributedString", ->
       str = new AttributedString("cool string")
       str.range(0, 4)
       list = str.range(2, 6)
-      expect(list.ranges.length).toBe 2
+      expect(list.getLength()).toBe 2
 
   describe "#toHtml", ->
     it "should serialize things", ->

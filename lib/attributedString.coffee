@@ -10,21 +10,20 @@ deepClone = (obj) ->
 
 class AttributedString
   constructor: (@text) ->
-    @startNode = new AttributedString.RangeNode(@text, 0, @text.length)
-
-  getLength: ->
-    @text.length
+    @startNode = new AttributedString.RangeNode(@text)
 
   getNodesLength: ->
     @startNode.getNodesLength()
 
-  range: (begin, end) ->
-    range = @startNode.split(begin)
-    range.split(end)
+  range: (a, b) ->
+    begin = Math.min(a, b)
+    end = Math.max(a, b)
+    startRange = @startNode.split(begin)
+    endRange = startRange.split(end - begin)
     ranges = []
-    while range.end <= end
-      ranges.push range
-      range = range.nextNode
+    while startRange != endRange
+      ranges.push startRange
+      startRange = startRange.next()
     new AttributedString.Ranges(ranges)
 
   toHtml: ->
@@ -36,16 +35,26 @@ class AttributedString
 
     serializer(@startNode, []).join ""
 
-
 class AttributedString.Ranges
   constructor: (@ranges) ->
+
+  getText: ->
+    strs = for range in @ranges
+      range.getText()
+    strs.join ""
+
+  getLength: ->
+    @ranges.length
 
   set: (name, value) ->
     for range in @ranges
       range.set name, value
     @
 
-  attr: (name, value) ->
+  addClass: (classes) ->
+    for range in @ranges
+      range.addClass classes
+    @
 
   css: (k, v) ->
     for range in @ranges
@@ -60,26 +69,26 @@ class AttributedString.Ranges
     @css "color", value
 
 class AttributedString.RangeNode
-  constructor: (@text, @start, @end, @nextNode) ->
+  constructor: (@text, @nextNode) ->
     @attributes = {}
 
-  css: (key, value) ->
-    if !@attributes.style?
-      @attributes.style = {}
-    @attributes.style[key] = value
-    @
+  next: ->
+    @nextNode
+
+  getText: ->
+    @text
 
   split: (num) ->
-    if @start == num
+    if num == 0
       return @
-    else if @start < num && num < @end
-      nn = @nextNode
-      @nextNode = new AttributedString.RangeNode(@text, num, @end, nn)
+    else if num < @text.length
+      oldNext = @nextNode
+      @nextNode = new AttributedString.RangeNode(@text.slice(num), oldNext)
       @nextNode.attributes = deepClone @attributes
-      @end = num
+      @text = @text.slice(0, num)
       return @nextNode
     else
-      @nextNode.split(num)
+      return @nextNode.split(num - @text.length)
 
   getNodesLength: ->
     if @nextNode == undefined
@@ -88,7 +97,7 @@ class AttributedString.RangeNode
       return @nextNode.getNodesLength() + 1
 
   getLength: ->
-    @end - @start
+    @text.length
 
   set: (name, value) ->
     if value == false
@@ -97,9 +106,22 @@ class AttributedString.RangeNode
       @attributes[name] = value
     @
 
+  css: (key, value) ->
+    if !@attributes.style?
+      @attributes.style = {}
+    @attributes.style[key] = value
+    @
+
+  addClass: (classes) ->
+    if @attributes.class?
+      @attributes.class += " #{classes}"
+    else
+      @attributes.class = classes
+    @
+
   toHtml: ->
     attributesSerializer = new AttributedString.AttributesSerializer(@attributes)
-    "<span#{attributesSerializer.toHtml()}>#{@text.slice(@start, @end)}</span>"
+    "<span#{attributesSerializer.toHtml()}>#{@text}</span>"
 
 class AttributedString.AttributesSerializer
   constructor: (@attributes) ->
