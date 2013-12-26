@@ -26,6 +26,19 @@ class AttributedString
       startRange = startRange.next()
     new AttributedString.Ranges(ranges)
 
+  toObject: ->
+    serializer = (node, array) ->
+      if node
+        array.push(
+          text: node.text,
+          attributes: node.attributes
+        )
+        serializer(node.next(), array)
+      else
+        array
+
+    serializer(@startNode, [])
+
   toHtml: ->
     serializer = (node, array) ->
       array.push node.toHtml()
