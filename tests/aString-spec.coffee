@@ -15,6 +15,13 @@ describe "aString", ->
       expect(arr[2].attributes).toEqual { "class": "header" }
       expect(arr[3].text).toBe " string"
 
+  describe "#toHtml", ->
+    it "should call toHtml on each range", ->
+      a = aString("a cool string")
+      a.range(2, 6).attr("data-class", "header")
+      a.range(0, 4).attr("data-href", "#")
+      expect(a.toHtml()).toBe '<span data-href="#">a </span><span data-class="header" data-href="#">co</span><span data-class="header">ol</span><span> string</span>'
+
 describe "StringRange", ->
   describe "#attr", ->
     it "should act as a setter and getter", ->
