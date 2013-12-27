@@ -63,3 +63,26 @@ describe "StringRange", ->
       )
       expect(range.css("color")).toBe "red"
       expect(range.css("text-decoration")).toBe "underline"
+
+  describe "#addClass", ->
+    it "should add the class to the class array only once", ->
+      str = aString("a cool string")
+      range = str.range(2, 6).get(0)
+      range.addClass("cool")
+      range.addClass("cool")
+      expect(range.attributes.class).toEqual ["cool"]
+
+    it "should split the classes if there are multiple passed", ->
+      str = aString("a cool string")
+      range = str.range(2, 6).get(0)
+      range.addClass("cool bananas")
+      expect(range.attributes.class).toEqual ["cool", "bananas"]
+
+  describe "#removeClass", ->
+    it "should remove the class from the list", ->
+      str = aString("a cool string")
+      range = str.range(2, 6).get(0)
+      range.addClass("cool")
+      range.addClass("cool bananas")
+      range.removeClass("cool")
+      expect(range.attributes.class).toEqual ["bananas"]
