@@ -15,6 +15,18 @@ describe "aString", ->
       expect(arr[2].attributes).toEqual { "class": "header" }
       expect(arr[3].text).toBe " string"
 
+    it "should handle line breaks", ->
+      a = aString("some very cool\n\nstring")
+      a.range(2, 6)
+      a.range(18, 20)
+      expect(a.toArray()).toEqual [
+        { text: 'so', attributes: {} },
+        { text: 'me v', attributes: {} },
+        { text: 'ery cool\n\nst', attributes: {} },
+        { text: 'ri', attributes: {} },
+        { text: 'ng', attributes: {} } ]
+
+
   describe "#toHtml", ->
     it "should call toHtml on each range", ->
       a = aString("a cool string")
