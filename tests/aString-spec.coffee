@@ -98,3 +98,13 @@ describe "StringRange", ->
       range.addClass("cool bananas")
       range.removeClass("cool")
       expect(range.attributes.class).toEqual ["bananas"]
+
+  describe "#filter", ->
+    it "should return a rangesList with the right values", ->
+      str = aString("a cool string")
+      str.range(2, 6).addClass "banana"
+      str.range(8, 10).addClass "banana"
+
+      list = str.filter( (i, range) -> range.hasClass("banana"))
+      expect(list.ranges[0].text).toEqual "cool"
+      expect(list.ranges[1].text).toEqual "tr"
