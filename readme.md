@@ -1,21 +1,22 @@
 attributedString.js
 ====
 
-`attributedString.js` is a simple Javascript String manipulation library that
-allows association of attributes with ranges in a string. `AttributedString`
-implementations are available in Java and Objective-C, but I couldn't find one
-for Javascript.
-
-Attributed strings are very useful when formatting strings for display. While
-it is possible to do this kind of transformation using DOM manipulation, this
-seems too complicated.
+`attributedString.js` is a Javascript String manipulation library that allows association of attributes with ranges in a string. 
 
 ## Usage
+    function unsafeToHtml(attributedString) {
+        let unsafeHtmlString = '';
+        string.forEach((node) => {
+        const style = Object.keys(node.attributes).reduce(((result, key) => result + `${key}: ${node.attributes[key]};`), '');
+        unsafeHtmlString += `<span style="${style}">${node.string}</span>`;
+        });
+        return unsafeHtmlString;
+    }
 
-    var a = this.aString("Hi friends. This is an attributed string. Isn't it nice?")
-    a.range(3, 10).css("text-decoration", "underline")
-    a.range(23, 40).css("text-decoration", "underline")
-    a.range(23, 33).css("color", "red")
-    a.range(34, 40).css("color", "blue")
-    console.log(a.toHtml())
-    // => <span>Hi </span><span style="text-decoration: underline">friends</span><span>. This is an </span><span style="text-decoration: underline; color: red">attributed</span><span style="text-decoration: underline"> </span><span style="text-decoration: underline; color: blue">string</span><span>. Isn't it nice?</span>
+    const originalString = 'Hi friends. This is an attributed string. Isn\'t it nice?';
+    const string = new AttributedString(originalString);
+    string.range(3, 10).forEach((n) => n.attr('text-decoration', 'underline'));
+    string.range(23, 40).forEach((n) => n.attr('text-decoration', 'underline'));
+    string.range(23, 33).forEach((n) => n.attr('color', 'red'));
+    string.range(34, 40).forEach((n) => n.attr('color', 'blue'));
+    console.log(unsafeToHtml(string)); // => <span style="">Hi </span><span style="text-decoration: underline;">friends</span><span style="">. This is an </span><span style="text-decoration: underline;color: red;">attributed</span><span style="text-decoration: underline;"> </span><span style="text-decoration: underline;color: blue;">string</span><span style="">. Isn't it nice?</span>

@@ -1,0 +1,33 @@
+{
+  "name": "attributedstring",
+  "version": "1.0.0",
+  "description": "attributedString.js ====",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cohitre/attributedString.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cohitre/attributedString.js/issues"
+  },
+  "homepage": "https://github.com/cohitre/attributedString.js#readme",
+  "devDependencies": {
+    "@babel/preset-env": "^7.3.4",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "5.3.2",
+    "babel-preset-env": "^1.7.0",
+    "jasmine": "^3.3.1",
+    "webpack": "1.12.2",
+    "webpack-dev-server": "1.11.0"
+  }
+}
